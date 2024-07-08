@@ -34,10 +34,12 @@ void Grid::placePixels(int col, int raw) {
 }
 
 void Grid::OP_DXYN(int x, int y, int n, CPU *cpu) {
-    uint8_t All_pixel = cpu->memory[cpu->I];
     for(int N = 0; N < n; N++) {
+        uint8_t All_pixel = cpu->memory[cpu->I + N];
+
         for(int height = 0; height < 8; height++) {
-            uint8_t pixel = All_pixel >> (7 - height) & 0b0001;              
+            uint8_t pixel = All_pixel >> (7 - height) & 0b0001;      
+           
 
             if (pixel == 1) {
                 if (grid[(x + height)][(y + N)] == 1) {
