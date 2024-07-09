@@ -45,10 +45,11 @@ CPU::CPU()
     
 }
 
+
 void CPU::loadGame() {
     std::cout << "File Contents:" << std::endl;
 
-    FILE *file = fopen("rom/ibm_logo.ch8", "r");
+    FILE *file = fopen("rom/breakout.rom", "r");
     if (file == NULL) {
         std::cout << "Error: Couldn't open the file" << std::endl;
         exit(1);

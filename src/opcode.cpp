@@ -216,10 +216,17 @@ void opcode::DRW_DXYN_OP(CPU *cpu, uint16_t opcode, Grid *grid){
 // A faire ----------------------------------------------
 
 void opcode::SKP_EX9E_OP(CPU *cpu, uint16_t opcode){
+    if (cpu->touche[cpu->registre[(opcode & 0x0F00) >> 6]] == 1){
+        cpu->pc += 2;
+    }
     cpu->pc += 2;
+
 }
 
 void opcode::SKNP_EXA1_OP(CPU *cpu, uint16_t opcode){
+    if (cpu->touche[cpu->registre[(opcode & 0x0F00) >> 6]] == 0){
+        cpu->pc += 2;
+    }
     cpu->pc += 2;
 
 }
@@ -410,12 +417,15 @@ void opcode::DecodOpcode(CPU *cpu, uint16_t opcode, Grid *grid) {
 
         case 24: // EX9E
             std::cout << "EX9E SKP" << std::endl;
-            // A Implementer
+            SKP_EX9E_OP(cpu, opcode);
+            std::cout << "A FAIRE" << std::endl; 
             break;
 
         case 25: // EXA1
             std::cout << "EXA1 SKNP" << std::endl;
-            // A Implementer
+            std::cout << "A FAIRE" << std::endl; 
+
+            SKNP_EXA1_OP(cpu, opcode);
             break;
 
         case 26: // FX07
@@ -425,7 +435,7 @@ void opcode::DecodOpcode(CPU *cpu, uint16_t opcode, Grid *grid) {
 
         case 27: // FX0A
             std::cout << "FX0A LD" << std::endl;
-            // A Implementer
+            LD_FX0A_OP(cpu, opcode);
             break;
 
         case 28: // FX15

@@ -15,6 +15,7 @@ public:
     uint16_t I;
     uint16_t pc;
     uint16_t opcode;
+    bool touche[16];
     
 
     void loadGame();
