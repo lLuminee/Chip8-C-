@@ -51,7 +51,7 @@ void opcode::initializeOpcodeMask()
 uint16_t GetAction(uint16_t opcode, CPU *cpu) {
     uint16_t resultat; 
     for (int i = 0; i < 35; i++) {
-        resultat= (jp.masque[i]&opcode);  /* On récupère les bits concernés par le test, l'identifiant de l'opcode */  
+        resultat= (jp.masque[i] & opcode);  /* On récupère les bits concernés par le test, l'identifiant de l'opcode */  
         if(resultat == jp.id[i]) {
             return i;
         }
@@ -66,7 +66,9 @@ void opcode::CLS_00E0_OP(CPU *cpu, Grid *grid){
 }
 
 void opcode::RET_00EE_OP(CPU *cpu){
-    cpu->pc += 2;
+    
+    cpu->pc = cpu->pile.back();
+    cpu->pile.pop_back();
 }
 
 void opcode::SYS_0NNN_OP(CPU *cpu, uint16_t opcode){
@@ -123,6 +125,7 @@ void opcode::LD_8XY0_OP(CPU *cpu, uint16_t opcode){
 }
 
 void opcode::OR_8XY1_OP(CPU *cpu, uint16_t opcode){
+
     cpu->registre[(opcode & 0x0F00) >> 8] |= cpu->registre[(opcode & 0x00F0) >> 4];
     cpu->pc += 2;
 }
@@ -207,7 +210,7 @@ void opcode::RND_CXNN_OP(CPU *cpu, uint16_t opcode){
 }
 
 void opcode::DRW_DXYN_OP(CPU *cpu, uint16_t opcode, Grid *grid){
-    grid->OP_DXYN(cpu->registre[(opcode & 0x0F00) >> 6], cpu->registre[(opcode & 0x00F0) >> 4], opcode & 0x000F, cpu);
+    grid->OP_DXYN(cpu->registre[(opcode & 0x0F00) >> 8], cpu->registre[(opcode & 0x00F0) >> 4], opcode & 0x000F, cpu);
     cpu->pc += 2;
 
 
@@ -284,11 +287,13 @@ void opcode::LD_FX55_OP(CPU *cpu, uint16_t opcode){
     cpu->pc += 2;
 }
 
-void opcode::LD_FX65_OP(CPU *cpu, uint16_t opcode){
-    for (int i = 0; i <= ((opcode & 0x0F00) >> 8); i++) {
+void opcode::LD_FX65_OP(CPU *cpu, uint16_t opcode) {
+    int x = (opcode & 0x0F00) >> 8;
+
+    for (int i = 0; i <= x; i++) {
         cpu->registre[i] = cpu->memory[cpu->I + i];
     }
-    cpu->I += ((opcode & 0x0F00) >> 8) + 1;
+
     cpu->pc += 2;
 }
 
@@ -476,7 +481,6 @@ void opcode::DecodOpcode(CPU *cpu, uint16_t opcode, Grid *grid) {
     default:
 
         std::cout << "Error: Opcode not found"<< opcode << std::endl;
-        cpu->pc += 2;
 
         break;
     }

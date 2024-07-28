@@ -45,20 +45,39 @@ CPU::CPU()
     
 }
 
+void CPU::initialize() {
+    std::cout << "CPU Constructor" << std::endl;
+    pc = 0x200;
+    memset(memory, 0, sizeof(memory));
+    memset(registre, 0, 16);
+    I = 0;
+    opcode = 0;
+    pile.resize(16);
+    memset(pile.data(), 0, sizeof(pile));
+    LoadFontset(memory);
+}
 
-void CPU::loadGame() {
-    std::cout << "File Contents:" << std::endl;
+void CPU::loadGame(const char* CharGameName) {
 
-    FILE *file = fopen("rom/breakout.rom", "r");
+    std::string cpp_string(CharGameName);
+    std::string pathGame = ("rom/" + cpp_string);
+
+    std::cout << pathGame << std::endl;
+
+    FILE *file = fopen(pathGame.c_str() , "r");
     if (file == NULL) {
         std::cout << "Error: Couldn't open the file" << std::endl;
+        std::cout << pathGame << std::endl;
         exit(1);
     } else {
         fread(&memory[0x200], 0xfff, 1, file);
         fclose(file);
+
     }
     std::cout << "Game Loaded" << std::endl;
 }
+
+
 
 
 
@@ -93,14 +112,14 @@ std::string CPU::toHexString(uint16_t value) {
 }
 
 
-void CPU::PrintOpocdeMemory() {
+std::string CPU::PrintOpocdeMemory() {
     std::cout << "Printing Opcodes" << std::endl;
 
     for (int i = 0; i < 0xFFF; i += 2) {
         if (memory[i] != 0 || memory[i + 1] != 0) {
             std::cout << toHexString(memory[i]) << toHexString(memory[i + 1]) << " at address: " << i << std::endl;
+            return toHexString(memory[i]) + toHexString(memory[i + 1]);
         }
     }
 
-    std::cout << std::endl;
 }
