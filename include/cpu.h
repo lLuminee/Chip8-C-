@@ -18,7 +18,8 @@ public:
     uint16_t opcode;
     uint16_t Befor_opcode;
     uint16_t After_opcode;
-    bool touche[16];
+    uint8_t touche[16];
+    const char* GameName;
 
     
     void initialize();

@@ -1,10 +1,12 @@
 #include <iostream>
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_sdlrenderer2.h>
 #include <imgui_memory_editor.h>
 #include <cstring> 
+#include <nfd.h>
 
 #include "../include/grid.h"
 #include "../include/cpu.h"
@@ -16,7 +18,7 @@
 const int Window_Width = static_cast<int>(1920 / 1.5);  // Calcul avec casting pour éviter les erreurs
 const int Window_Height = static_cast<int>(1080 / 1.5); // Calcul avec casting pour éviter les erreurs
 
-
+const int Y = 19;
 
 
 
@@ -38,7 +40,8 @@ void Chip8::Emulation(int argc, char** argv, bool alredy_game, const char* game_
     opcode op;
 
     if (alredy_game) {
-        cpu.loadGame(game_name);
+        cpu.GameName = game_name;
+        cpu.loadGame(cpu.GameName);
         op.initializeOpcodeMask();
         grid.initialize();  
 
@@ -67,6 +70,12 @@ void Chip8::Emulation(int argc, char** argv, bool alredy_game, const char* game_
         exit(1);
     }
 
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1) {
+
+        std::cout << "Mix_OpenAudio Error: " << Mix_GetError() << std::endl;
+    }
+
     // Initialiser ImGui
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -77,7 +86,7 @@ void Chip8::Emulation(int argc, char** argv, bool alredy_game, const char* game_
 
 
         // Gestion des FPS:
-    const int FPS = 240;
+    const int FPS = 240;  // 240
     const int frameDelay = 1000 / FPS; // Délai pour chaque frame en millisecondes
 
     bool run = true;
@@ -88,6 +97,205 @@ void Chip8::Emulation(int argc, char** argv, bool alredy_game, const char* game_
             if (event.type == SDL_QUIT) {
                 run = false;
             }
+    /*---------------------------------------------------------------------------------------------*/
+    switch (event.type) {
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym) {
+                    case SDLK_ESCAPE:
+                        std::cout << "Touche presse : ESC" << std::endl;
+                        break;
+
+                    case SDLK_KP_7:
+                        cpu.touche[0x0] = 1;
+                        std::cout << "Touche presse : 1" << std::endl;
+                        break;
+
+                    case SDLK_KP_8:
+                        cpu.touche[0x1] = 1;
+                        std::cout << "Touche presse : 2" << std::endl;
+                        break;
+
+                    case SDLK_KP_9:
+                        cpu.touche[0x2] = 1;
+                        std::cout << "Touche presse : 3" << std::endl;
+                        break;
+
+                    case SDLK_KP_4:
+                        cpu.touche[0x4] = 1;
+                        std::cout << "Touche presse : 4" << std::endl;
+                        break;
+
+                    case SDLK_KP_5:
+                        cpu.touche[0x5] = 1;
+                        std::cout << "Touche presse : 5" << std::endl;
+                        break;
+
+                    case SDLK_KP_6:
+                        cpu.touche[0x6] = 1;
+                        std::cout << "Touche presse : 6" << std::endl;
+                        break;
+
+                    case SDLK_KP_MULTIPLY:
+                        cpu.touche[0x7] = 1;
+                        std::cout << "Touche presse : D" << std::endl;
+                        break;
+
+                    case SDLK_KP_1:
+                        cpu.touche[0x8] = 1;
+                        std::cout << "Touche presse : 7" << std::endl;
+                        break;
+
+                    case SDLK_KP_2:
+                        cpu.touche[0x9] = 1;
+                        std::cout << "Touche presse : 8" << std::endl;
+                        break;
+
+                    case SDLK_KP_3:
+                        cpu.touche[0xA] = 1;
+                        std::cout << "Touche presse : 9" << std::endl;
+                        break;
+
+                    case SDLK_KP_MINUS:
+                        cpu.touche[0xB] = 1;
+                        std::cout << "Touche presse : E" << std::endl;
+                        break;
+
+                    case SDLK_RIGHT:
+                        cpu.touche[0xC] = 1;
+                        std::cout << "Touche presse : A" << std::endl;
+                        break;
+
+                    case SDLK_KP_0:
+                        cpu.touche[0xD] = 1;
+                        std::cout << "Touche presse : 0" << std::endl;
+                        break;
+
+                    case SDLK_KP_PERIOD:
+                        cpu.touche[0xE] = 1;
+                        std::cout << "Touche presse : B" << std::endl;
+                        break;
+
+                    case SDLK_KP_PLUS:
+                        cpu.touche[0xF] = 1;
+                        std::cout << "Touche presse : F" << std::endl;
+                        break;
+
+                    default:
+                        std::cout << "Touche presse : " << event.key.keysym.sym << std::endl;
+                        break;
+                }
+                break;
+
+            case SDL_KEYUP:
+                switch (event.key.keysym.sym) {
+                    case SDLK_KP_7:
+                        cpu.touche[0x0] = 0;
+                        std::cout << "Touche relâchée : 1" << std::endl;
+                        break;
+
+                    case SDLK_KP_8:
+                        cpu.touche[0x1] = 0;
+                        std::cout << "Touche relâchée : 2" << std::endl;
+                        break;
+
+                    case SDLK_KP_9:
+                        cpu.touche[0x2] = 0;
+                        std::cout << "Touche relâchée : 3" << std::endl;
+                        break;
+
+                    case SDLK_KP_4:
+                        cpu.touche[0x4] = 0;
+                        std::cout << "Touche relâchée : 4" << std::endl;
+                        break;
+
+                    case SDLK_KP_5:
+                        cpu.touche[0x5] = 0;
+                        std::cout << "Touche relâchée : 5" << std::endl;
+                        break;
+
+                    case SDLK_KP_6:
+                        cpu.touche[0x6] = 0;
+                        std::cout << "Touche relâchée : 6" << std::endl;
+                        break;
+
+                    case SDLK_KP_MULTIPLY:
+                        cpu.touche[0x7] = 0;
+                        std::cout << "Touche relâchée : D" << std::endl;
+                        break;
+
+                    case SDLK_KP_1:
+                        cpu.touche[0x8] = 0;
+                        std::cout << "Touche relâchée : 7" << std::endl;
+                        break;
+
+                    case SDLK_KP_2:
+                        cpu.touche[0x9] = 0;
+                        std::cout << "Touche relâchée : 8" << std::endl;
+                        break;
+
+                    case SDLK_KP_3:
+                        cpu.touche[0xA] = 0;
+                        std::cout << "Touche relâchée : 9" << std::endl;
+                        break;
+
+                    case SDLK_KP_MINUS:
+                        cpu.touche[0xB] = 0;
+                        std::cout << "Touche relâchée : E" << std::endl;
+                        break;
+
+                    case SDLK_RIGHT:
+                        cpu.touche[0xC] = 0;
+                        std::cout << "Touche relâchée : A" << std::endl;
+                        break;
+
+                    case SDLK_KP_0:
+                        cpu.touche[0xD] = 0;
+                        std::cout << "Touche relâchée : 0" << std::endl;
+                        break;
+
+                    case SDLK_KP_PERIOD:
+                        cpu.touche[0xE] = 0;
+                        std::cout << "Touche relâchée : B" << std::endl;
+                        break;
+
+                    case SDLK_KP_PLUS:
+                        cpu.touche[0xF] = 0;
+                        std::cout << "Touche relâchée : F" << std::endl;
+                        break;
+
+                    default:
+                        std::cout << "Touche relâchée : " << event.key.keysym.sym << std::endl;
+                        break;
+                }
+                break;
+
+            default:
+                break;
+        }
+
+    /*---------------------------------------------------------------------------------------------*/
+
+        if (cpu.sound_timer != 0) {
+            std::cout << "Beep" << std::endl;
+        Mix_Chunk *son = Mix_LoadWAV("sound/beep.wav");
+        if (!son) {
+          std::cout << "Erreur lors de la lecture du son: " << Mix_GetError() << std::endl;
+
+        }   
+
+        // Lecture du son
+        if (Mix_PlayChannel(-1, son, 0) == 0) {
+            std::cout << "Erreur lors de la lecture du son: " << Mix_GetError() << std::endl;
+        } 
+
+
+
+
+
+
+        }
+
+
             ImGui_ImplSDL2_ProcessEvent(&event);
         }
         
@@ -100,9 +308,15 @@ void Chip8::Emulation(int argc, char** argv, bool alredy_game, const char* game_
             op.DecodOpcode(&cpu, cpu.opcode, &grid);
             cpu.After_opcode = cpu.memory[cpu.pc] << 8 | cpu.memory[cpu.pc + 1];
             
+
+            cpu.delay_timer -= 1;
+            cpu.sound_timer -= 1;
+
             opcodeHistory.push_back({cpu.pc, cpu.opcode});
             if (opcodeHistory.size() > maxHistorySize) {
                 opcodeHistory.erase(opcodeHistory.begin());
+    
+    
             }
         }
 
@@ -117,8 +331,8 @@ void Chip8::Emulation(int argc, char** argv, bool alredy_game, const char* game_
         mem_edit.DrawContents(&cpu.memory, sizeof(cpu.memory));
         
 
-        ImGui::SetWindowSize(ImVec2(832, 304));
-        ImGui::SetWindowPos(ImVec2(0, 416));
+        ImGui::SetWindowSize(ImVec2(832, 304 - Y), ImGuiCond_FirstUseEver);
+        ImGui::SetWindowPos(ImVec2(0, 416 + Y));
 
 
         ImGui::End();
@@ -139,6 +353,8 @@ void Chip8::Emulation(int argc, char** argv, bool alredy_game, const char* game_
             cpu.opcode = cpu.memory[cpu.pc] << 8 | cpu.memory[cpu.pc + 1];
             op.DecodOpcode(&cpu, cpu.opcode, &grid);
             cpu.After_opcode = cpu.memory[cpu.pc] << 8 | cpu.memory[cpu.pc + 1];
+            cpu.delay_timer -= 1;
+            cpu.sound_timer -= 1;
 
             opcodeHistory.push_back({cpu.pc, cpu.opcode});
             if (opcodeHistory.size() > maxHistorySize) {
@@ -150,7 +366,7 @@ void Chip8::Emulation(int argc, char** argv, bool alredy_game, const char* game_
         ImGui::SameLine();
         if (ImGui::Button("Reload", ImVec2(50, 20))) {
             cpu.initialize();
-            cpu.loadGame(game_name);
+            cpu.loadGame(cpu.GameName);
             op.initializeOpcodeMask();
             grid.initialize();  
         }
@@ -167,6 +383,8 @@ void Chip8::Emulation(int argc, char** argv, bool alredy_game, const char* game_
 
             std::string AferOP = "After OP: " + cpu.toHexString(cpu.After_opcode);
             ImGui::Text(AferOP.c_str());
+
+            ImGui::Text(cpu.GameName);
 
 
 
@@ -234,12 +452,44 @@ ImGui::SetWindowPos(ImVec2(832, 416));
 
 
 //--------------------------------------------------- TODO
-/*
+
         if (ImGui::BeginMainMenuBar()) {
               if (ImGui::BeginMenu("File")) {
                    if (ImGui::MenuItem("Create")) { 
                    }
                    if (ImGui::MenuItem("Open", "Ctrl+O")) { 
+
+
+
+                        // Déclarez un pointeur pour stocker le chemin du fichier sélectionné
+                        nfdchar_t *outPath = nullptr;
+
+                        // Ouvrez la boîte de dialogue pour sélectionner un fichier avec les extensions "ch8" et "c8"
+                        nfdresult_t result = NFD_OpenDialog("ch8,c8", nullptr, &outPath);
+
+                        // Gérer le résultat de la boîte de dialogue
+                        switch (result) {
+                            case NFD_OKAY:
+                                std::cout << "Fichier sélectionné: " << outPath << std::endl;
+                                cpu.GameName = outPath;
+                                cpu.initialize();
+                                cpu.loadGame(outPath);
+                                op.initializeOpcodeMask();
+                                grid.initialize();  
+
+
+
+                                free(outPath);  // Libérez la mémoire allouée pour le chemin du fichier
+                                break;
+                            case NFD_CANCEL:
+                                std::cout << "L'utilisateur a annulé la sélection." << std::endl;
+                                break;
+                            case NFD_ERROR:
+                                std::cerr << "Erreur: " << NFD_GetError() << std::endl;
+                                break;
+                        }
+
+
                    }
                    if (ImGui::MenuItem("Save", "Ctrl+S")) {
                    }
@@ -250,7 +500,7 @@ ImGui::SetWindowPos(ImVec2(832, 416));
              ImGui::EndMainMenuBar();
         }
 
-*/
+
 
 
 
@@ -289,6 +539,9 @@ ImGui::SetWindowPos(ImVec2(832, 416));
 
     std::cout << "FIN DU PROGRAME" << std::endl;    
 
+
+    Mix_CloseAudio();
+    Mix_Quit();
 
     ImGui_ImplSDLRenderer2_Shutdown();
     ImGui_ImplSDL2_Shutdown();

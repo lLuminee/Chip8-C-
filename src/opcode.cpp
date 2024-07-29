@@ -80,7 +80,7 @@ void opcode::JP_1NNN_OP(CPU *cpu, uint16_t opcode){
 }
  
 void opcode::CALL_2NNN_OP(CPU *cpu, uint16_t opcode){
-    cpu->pile.push_back(cpu->pc);
+    cpu->pile.push_back(cpu->pc + 2);
     cpu->pc = opcode & 0x0FFF;
 }
 
@@ -481,6 +481,8 @@ void opcode::DecodOpcode(CPU *cpu, uint16_t opcode, Grid *grid) {
     default:
 
         std::cout << "Error: Opcode not found"<< opcode << std::endl;
+        std::cout << opcode << std::endl;
+        cpu->pc += 2;
 
         break;
     }

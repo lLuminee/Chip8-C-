@@ -59,16 +59,12 @@ void CPU::initialize() {
 
 void CPU::loadGame(const char* CharGameName) {
 
-    std::string cpp_string(CharGameName);
-    std::string pathGame = ("rom/" + cpp_string);
+    std::cout << CharGameName << std::endl;
 
-    std::cout << pathGame << std::endl;
-
-    FILE *file = fopen(pathGame.c_str() , "r");
+    FILE *file = fopen(CharGameName , "r");
     if (file == NULL) {
         std::cout << "Error: Couldn't open the file" << std::endl;
-        std::cout << pathGame << std::endl;
-        exit(1);
+        std::cout << CharGameName << std::endl;
     } else {
         fread(&memory[0x200], 0xfff, 1, file);
         fclose(file);

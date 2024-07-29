@@ -3,7 +3,7 @@
 
 
 #define alredy_game true // Si un jeu et deja chargé au lancement
-#define game_name "4-flags.ch8"// Nom du jeu qui sera deja chargé
+#define game_name "rom/4-flags.ch8"// Nom du jeu qui sera deja chargé
 #define Step_par_Step true // Si le jeu fontione etape par etape
 
 

@@ -6,7 +6,10 @@ LIB_DIRS = -L lib
 
 ARGS = -Wall -Wextra -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
 
-LIBS = -lmingw32 -lSDL2main -lSDL2
+# Options de compilation
+ARGS_ = -Wall -Wextra -O3 -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic -mwindows
+
+LIBS = -lmingw32 -lSDL2main -lSDL2 -lnfd_d -lole32 -lcomctl32 -luuid -l libSDL2_mixer 
 
 SRC = $(wildcard src/*.cpp)  $(wildcard imgui/*.cpp) $(wildcard imgui/*.c)
 

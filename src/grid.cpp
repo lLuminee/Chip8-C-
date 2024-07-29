@@ -11,10 +11,12 @@ Grid::Grid() {
     initialize();
 }
 
+int Y = 19;
+
 void Grid::print(SDL_Renderer* renderer) {
     for (int column = 0; column < numCols; column++) {
         for (int row = 0; row < numRows; row++) {
-            SDL_Rect rect = { column * cellSize, row * cellSize, cellSize, cellSize };
+            SDL_Rect rect = { column * cellSize, row * cellSize + Y, cellSize, cellSize };
             if (grid[column][row] == 0) {
                 SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE); // White color
                 SDL_RenderDrawRect(renderer, &rect);
